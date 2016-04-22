@@ -8,10 +8,7 @@ import com.microsoft.azure.iot.service.sdk.Device;
 import com.microsoft.azure.iot.service.sdk.RegistryManager;
 import com.microsoft.azure.iot.service.sdk.ServiceClient;
 import com.microsoft.azure.iothub.*;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import tests.integration.com.microsoft.azure.iothub.TestUtils.DeviceConnectionString;
 
 import java.io.IOException;
@@ -27,15 +24,17 @@ public class ReceiveMessagesIT
     private static String iotHubonnectionStringEnvVarName = "IOTHUB_CONNECTION_STRING";
     private static String iotHubConnectionString = "";
     private static RegistryManager registryManager;
-    private Device deviceHttps;
-    private Device deviceAmqps;
-    private Device deviceMqtt;
+    private static Device deviceHttps;
+    private static Device deviceAmqps;
+    private static Device deviceMqtt;
+
+    private static ServiceClient serviceClient;
 
     // How much to wait until receiving a message from the server, in milliseconds
-    private Integer receiveTimeout = 20;
+    private Integer receiveTimeout = 5000;
 
-    @Before
-    public void setUp() throws Exception
+    @BeforeClass
+    public static void setUp() throws Exception
     {
         Map<String, String> env = System.getenv();
         for (String envName : env.keySet())
@@ -64,11 +63,15 @@ public class ReceiveMessagesIT
         messageProperties.put("name1", "value1");
         messageProperties.put("name2", "value2");
         messageProperties.put("name3", "value3");
+
+        serviceClient = ServiceClient.createFromConnectionString(iotHubConnectionString);
+        serviceClient.open();
     }
 
-    @After
-    public void TearDown() throws IOException, IotHubException
+    @AfterClass
+    public static void TearDown() throws IOException, IotHubException
     {
+        serviceClient.close();
         registryManager.removeDevice(deviceHttps.getDeviceId());
         registryManager.removeDevice(deviceAmqps.getDeviceId());
         registryManager.removeDevice(deviceMqtt.getDeviceId());
@@ -89,14 +92,12 @@ public class ReceiveMessagesIT
             com.microsoft.azure.iothub.MessageCallback callback = new MessageCallback();
             client.setMessageCallback(callback, messageReceived);
 
-            ServiceClient serviceClient = ServiceClient.createFromConnectionString(iotHubConnectionString);
             String messageString = "Java service e2e test message to be received over Https protocol";
             com.microsoft.azure.iot.service.sdk.Message serviceMessage = new com.microsoft.azure.iot.service.sdk.Message(messageString);
-            serviceMessage.setProperties(this.messageProperties);
-            serviceClient.open();
+            serviceMessage.setProperties(messageProperties);
             String deviceId = deviceHttps.getDeviceId();
             serviceClient.send(deviceId, serviceMessage);
-            serviceClient.close();
+
 
             Integer waitDuration = 0;
             while(true)
@@ -107,6 +108,11 @@ public class ReceiveMessagesIT
                     break;
                 }
                 Thread.sleep(100);
+            }
+
+            if (waitDuration > receiveTimeout)
+            {
+                Assert.fail("Receiving messages over HTTPS protocol timed out.");
             }
 
             if (!messageReceived.getResult())
@@ -138,14 +144,11 @@ public class ReceiveMessagesIT
             com.microsoft.azure.iothub.MessageCallback callback = new MessageCallback();
             client.setMessageCallback(callback, messageReceived);
 
-            ServiceClient serviceClient = ServiceClient.createFromConnectionString(iotHubConnectionString);
             String messageString = "Java service e2e test message to be received over Amqps protocol";
             com.microsoft.azure.iot.service.sdk.Message serviceMessage = new com.microsoft.azure.iot.service.sdk.Message(messageString);
-            serviceMessage.setProperties(this.messageProperties);
-            serviceClient.open();
+            serviceMessage.setProperties(messageProperties);
             String deviceId = deviceAmqps.getDeviceId();
             serviceClient.send(deviceId, serviceMessage);
-            serviceClient.close();
 
             Integer waitDuration = 0;
             while(true)
@@ -156,6 +159,11 @@ public class ReceiveMessagesIT
                     break;
                 }
                 Thread.sleep(100);
+            }
+
+            if (waitDuration > receiveTimeout)
+            {
+                Assert.fail("Receiving messages over AMQPS protocol timed out.");
             }
 
             if (!messageReceived.getResult())
@@ -184,13 +192,10 @@ public class ReceiveMessagesIT
             com.microsoft.azure.iothub.MessageCallback callback = new MessageCallbackMqtt();
             client.setMessageCallback(callback, messageReceived);
 
-            ServiceClient serviceClient = ServiceClient.createFromConnectionString(iotHubConnectionString);
             String messageString = "Java service e2e test message to be received over Mqtt protocol";
             com.microsoft.azure.iot.service.sdk.Message serviceMessage = new com.microsoft.azure.iot.service.sdk.Message(messageString);
-            serviceClient.open();
             String deviceId = deviceMqtt.getDeviceId();
             serviceClient.send(deviceId, serviceMessage);
-            serviceClient.close();
 
             Integer waitDuration = 0;
             while(true)
@@ -201,6 +206,11 @@ public class ReceiveMessagesIT
                     break;
                 }
                 Thread.sleep(100);
+            }
+
+            if (waitDuration > receiveTimeout)
+            {
+                Assert.fail("Receiving messages over MQTT protocol timed out.");
             }
 
             if (!messageReceived.getResult())
@@ -246,7 +256,7 @@ public class ReceiveMessagesIT
         }
     }
 
-    public class MessageCallbackMqtt implements com.microsoft.azure.iothub.MessageCallback
+    private class MessageCallbackMqtt implements com.microsoft.azure.iothub.MessageCallback
     {
         public IotHubMessageResult execute(Message msg, Object context)
         {

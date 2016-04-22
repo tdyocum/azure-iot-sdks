@@ -7,10 +7,7 @@ import com.microsoft.azure.iot.service.exceptions.IotHubException;
 import com.microsoft.azure.iot.service.sdk.Device;
 import com.microsoft.azure.iot.service.sdk.RegistryManager;
 import com.microsoft.azure.iothub.*;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import tests.integration.com.microsoft.azure.iothub.TestUtils.DeviceConnectionString;
 
 import java.io.IOException;
@@ -23,15 +20,15 @@ public class SendMessagesIT
     private static String iotHubonnectionStringEnvVarName = "IOTHUB_CONNECTION_STRING";
     private static String iotHubConnectionString = "";
     private static RegistryManager registryManager;
-    private Device deviceHttps;
-    private Device deviceAmqps;
-    private Device deviceMqtt;
+    private static Device deviceHttps;
+    private static Device deviceAmqps;
+    private static Device deviceMqtt;
 
     // How much to wait until a message makes it to the server, in milliseconds
     private Integer sendTimeout = 5000;
 
-    @Before
-    public void setUp() throws Exception
+    @BeforeClass
+    public static void setUp() throws Exception
     {
         Map<String, String> env = System.getenv();
         for (String envName : env.keySet())
@@ -57,8 +54,8 @@ public class SendMessagesIT
         registryManager.addDevice(deviceMqtt);
     }
 
-    @After
-    public void TearDown() throws IOException, IotHubException
+    @AfterClass
+    public static void TearDown() throws IOException, IotHubException
     {
         registryManager.removeDevice(deviceHttps.getDeviceId());
         registryManager.removeDevice(deviceAmqps.getDeviceId());
