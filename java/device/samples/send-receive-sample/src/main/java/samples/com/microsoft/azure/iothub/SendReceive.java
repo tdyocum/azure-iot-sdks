@@ -100,7 +100,7 @@ public class SendReceive
     }
 
     protected static class EventCallback implements IotHubEventCallback{
-        public void execute(IotHubStatusCode status, Object context){
+        public Integer execute(IotHubStatusCode status, Object context){
             Integer i = (Integer) context;
             System.out.println("IoT Hub responded to message "+i.toString()
                 + " with status " + status.name());
@@ -209,33 +209,34 @@ public class SendReceive
 
         client.open();
 
+        System.out.println("Opened connection to IoT Hub.");
+
         System.out.println("Beginning to receive messages...");
 
         System.out.println("Sending the following event messages: ");
 
-        for (int i = 0; i < numRequests; ++i)
-        {
-            String msgStr = "Event Message " + Integer.toString(i);
-            try
+        new Thread(() -> {
+            for (int i = 0; i < numRequests; ++i)
             {
-                Message msg = new Message(msgStr);
-                msg.setProperty("messageCount", Integer.toString(i));
-                System.out.println(msgStr);
-                EventCallback eventCallback = new EventCallback();
-                client.sendEventAsync(msg, eventCallback, i);
+                String msgStr = "Event Message " + Integer.toString(i);
+                try
+                {
+                    Message msg = new Message(msgStr);
+                    msg.setProperty("messageCount", Integer.toString(i));
+                    System.out.println(msgStr);
+                    EventCallback eventCallback = new EventCallback();
+                    client.sendEventAsync(msg, eventCallback, i);
+                }
+                catch (Exception e)
+                {
+                }
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            catch (Exception e)
-            {
-            }
-            try
-            {
-                Thread.sleep(100);
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        }).start();
 
         System.out.println("Press any key to exit...");
 
