@@ -17,7 +17,6 @@ import org.apache.qpid.proton.amqp.messaging.Accepted;
 import org.apache.qpid.proton.amqp.messaging.Source;
 import org.apache.qpid.proton.amqp.messaging.Target;
 import org.apache.qpid.proton.amqp.transport.DeliveryState;
-import org.apache.qpid.proton.amqp.transport.ErrorCondition;
 import org.apache.qpid.proton.amqp.transport.SenderSettleMode;
 import org.apache.qpid.proton.engine.*;
 import org.apache.qpid.proton.engine.impl.WebSocketImpl;
@@ -45,7 +44,6 @@ import java.util.concurrent.Future;
 public final class AmqpsIotHubConnection extends BaseHandler
 {
     private int maxWaitTimeForOpeningConnection = 5000;
-    private IotHubReactor iotHubReactor;
     protected State state;
     private Future reactorFuture;
 
@@ -118,17 +116,16 @@ public final class AmqpsIotHubConnection extends BaseHandler
         String deviceId = this.config.getDeviceId();
         String iotHubName = this.config.getIotHubName();
 
-        this.hostName = this.config.getIotHubHostname();
         this.userName = deviceId + "@sas." + iotHubName;
 
         this.useWebSockets = useWebSockets;
         if (useWebSockets)
         {
-            this.hostName = String.format("%s:%d", hostName, amqpWebSocketPort);
+            this.hostName = String.format("%s:%d", this.config.getIotHubHostname(), amqpWebSocketPort);
         }
         else
         {
-            this.hostName = String.format("%s:%d", hostName, amqpPort);
+            this.hostName = String.format("%s:%d", this.config.getIotHubHostname(), amqpPort);
         }
 
         // Codes_SRS_AMQPSIOTHUBCONNECTION_15_003: [The constructor shall initialize the sender and receiver
@@ -172,9 +169,10 @@ public final class AmqpsIotHubConnection extends BaseHandler
 			try
             {
                 // Codes_SRS_AMQPSIOTHUBCONNECTION_15_009: [The function shall trigger the Reactor (Proton) to begin running.]
+                this.reactorFuture = this.startReactorAsync();
+
                 // Codes_SRS_AMQPSIOTHUBCONNECTION_15_010: [The function shall wait for the reactor to be ready and for
                 // enough link credit to become available.]
-                this.reactorFuture = this.startReactorAsync();
                 this.connectionReady();
             }
             catch(Exception e)
@@ -196,26 +194,29 @@ public final class AmqpsIotHubConnection extends BaseHandler
      */
     public void close()
     {
-        // Codes_SRS_AMQPSIOTHUBCONNECTION_15_012: [The function shall set the status of the AMQPS connection to CLOSED.]
-        this.state = State.CLOSED;
+        // Codes_SRS_AMQPSIOTHUBCONNECTION_15_048 [If the AMQPS connection is already closed, the function shall do nothing.]
+        if (this.state != State.CLOSED)
+        {
+            // Codes_SRS_AMQPSIOTHUBCONNECTION_15_012: [The function shall set the status of the AMQPS connection to CLOSED.]
+            this.state = State.CLOSED;
 
-        // Codes_SRS_AMQPSIOTHUBCONNECTION_15_013: [The function shall close the AMQPS sender and receiver links,
-        // the AMQPS session and the AMQPS connection.]
-        this.sender.close();
-        this.receiver.close();
-        this.session.close();
-        this.connection.close();
+            // Codes_SRS_AMQPSIOTHUBCONNECTION_15_013: [The function shall close the AMQPS sender and receiver links,
+            // the AMQPS session and the AMQPS connection.]
+            this.sender.close();
+            this.receiver.close();
+            this.session.close();
+            this.connection.close();
 
-        // Codes_SRS_AMQPSIOTHUBCONNECTION_15_014: [**The function shall stop the Proton reactor.**]**
-        this.reactorFuture.cancel(true);
-        this.executorService.shutdown();
+            // Codes_SRS_AMQPSIOTHUBCONNECTION_15_014: [The function shall stop the Proton reactor.]
+            this.reactorFuture.cancel(true);
+            this.executorService.shutdown();
+        }
     }
 
     /**
      * Creates a binary message using the given content and messageId. Sends the created message using the sender link.
      * @param message The message to be sent.
      * @return An {@link Integer} representing the hash of the message, or -1 if the connection is closed.
-     * @throws IOException If something went wrong with the connection while sending the message.
      */
     public Integer sendMessage(Message message)
     {
@@ -268,8 +269,6 @@ public final class AmqpsIotHubConnection extends BaseHandler
      * @param message the message to be acknowledged.
      * @param result the message result (one of {@link IotHubMessageResult#COMPLETE},
      *               {@link IotHubMessageResult#ABANDON}, or {@link IotHubMessageResult#REJECT}).
-     *
-     * @throws IOException if the IoT Hub could not be reached or if any other exception is thrown while attempting to acknowledge.
      */
     public Boolean sendMessageResult(AmqpsMessage message, IotHubMessageResult result)
     {
@@ -518,12 +517,11 @@ public final class AmqpsIotHubConnection extends BaseHandler
     private Future startReactorAsync() throws IOException
     {
         Reactor reactor = Proton.reactor(this);
-        this.iotHubReactor = new IotHubReactor(reactor);
+        IotHubReactor iotHubReactor = new IotHubReactor(reactor);
 
         executorService = Executors.newFixedThreadPool(1);
         ReactorRunner reactorRunner = new ReactorRunner(iotHubReactor);
-        Future reactorFuture = executorService.submit(reactorRunner);
-        return reactorFuture;
+        return executorService.submit(reactorRunner);
     }
 
     /**
@@ -549,7 +547,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
      * Subscribe a listener to the list of listeners.
      * @param listener the listener to be subscribed.
      */
-    void addListener(ServerListener listener)
+    public void addListener(ServerListener listener)
     {
         listeners.add(listener);
     }
@@ -591,7 +589,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
 
     /**
      * Notifies all the listeners that a message was received from the server.
-     * @param msg
+     * @param msg The message received from server.
      */
     private void messageReceivedFromServer(Message msg)
     {
@@ -608,7 +606,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
     {
         private IotHubReactor iotHubReactor;
 
-        public ReactorRunner(IotHubReactor iotHubReactor)
+        ReactorRunner(IotHubReactor iotHubReactor)
         {
             this.iotHubReactor = iotHubReactor;
         }

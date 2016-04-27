@@ -123,15 +123,13 @@ public void handleMessage() throws IOException;
 
 **SRS_AMQPSTRANSPORT_15_021: [**If the transport is closed, the function shall throw an IllegalStateException.**]**
 
-**SRS_AMQPSTRANSPORT_15_022: [**If the callback from the config object is null, the function shall return.**]**
-
 **SRS_AMQPSTRANSPORT_15_023: [**The function shall attempt to consume a message from the IoT Hub.**]**
 
 **SRS_AMQPSTRANSPORT_15_024: [**If no message was received from IotHub, the function shall return.**]**
 
-**SRS_AMQPSTRANSPORT_15_025: [**The function shall return the message if one was pulled from the queue, otherwise it shall return null.**]**
+**SRS_AMQPSTRANSPORT_15_025: [**If no callback is defined, the list of received messages is cleared.**]**
 
-**SRS_AMQPSTRANSPORT_15_026: [**If a message is found and a message callback is registered, the function shall invoke the callback on the message.**]**
+**SRS_AMQPSTRANSPORT_15_026: [**The function shall invoke the callback on the message.**]**
 
 **SRS_AMQPSTRANSPORT_15_027: [**The function shall return the message result (one of COMPLETE, ABANDON, or REJECT) to the IoT Hub.**]**
 
@@ -146,7 +144,7 @@ public synchronized void messageSent(Integer messageHash, Boolean deliveryState)
 
 **SRS_AMQPSTRANSPORT_15_029: [**If the hash cannot be found in the list of keys for the messages in progress, the method returns.**]**
 
-**SRS_AMQPSTRANSPORT_15_030: [**If the message was successfully delivered, it is removed from the list of messages in progress and its callback is added to the list of callbacks to be executed.**]**
+**SRS_AMQPSTRANSPORT_15_030: [**If the message was successfully delivered, its callback is added to the list of callbacks to be executed.]**]**
 
 **SRS_AMQPSTRANSPORT_15_031: [**If the message was not delivered successfully, it is buffered to be sent again.**]**
 

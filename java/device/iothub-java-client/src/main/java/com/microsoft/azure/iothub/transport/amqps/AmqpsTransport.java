@@ -20,9 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -166,7 +164,7 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
      */
     public void sendMessages() throws IOException, IllegalStateException
     {
-        // Codes_SRS_AMQPSTRANSPORT_11_028: [If the AMQPS session is closed, the function shall throw an IllegalStateException.]
+        // Codes_SRS_AMQPSTRANSPORT_15_012: [If the AMQPS session is closed, the function shall throw an IllegalStateException.]
         if (this.state == State.CLOSED)
         {
             throw new IllegalStateException("Cannot send messages when the AMQPS transport is closed.");
@@ -178,16 +176,19 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
             return;
         }
 
+        Collection<IotHubOutboundPacket> failedMessages = new ArrayList<>() ;
+
         // Codes_SRS_AMQPSTRANSPORT_15_014: [The function shall attempt to send every message on its waiting list, one at a time.]
         while (!this.waitingMessages.isEmpty())
         {
             IotHubOutboundPacket packet = this.waitingMessages.remove();
 
+            Message message = packet.getMessage();
             // Codes_SRS_AMQPSTRANSPORT_15_015: [The function shall skip messages with null or empty body.]
-            if (packet.getMessage() != null && packet.getMessage().getBytes().length > 0)
+            if (message != null && message.getBytes().length > 0)
             {
                 // Codes_SRS_AMQPSTRANSPORT_15_036: [The function shall create a new Proton message from the IoTHub message.]
-                MessageImpl protonMessage = iotHubMessageToProtonMessage(packet.getMessage());
+                MessageImpl protonMessage = iotHubMessageToProtonMessage(message);
 
                 // Codes_SRS_AMQPSTRANSPORT_15_037: [The function shall attempt to send the Proton message to IoTHub using the underlying AMQPS connection.]
                 Integer sendHash = connection.sendMessage(protonMessage);
@@ -200,10 +201,12 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
                 // Codes_SRS_AMQPSTRANSPORT_15_017: [If the sent message hash is not valid, it shall be buffered to be sent in a subsequent attempt.]
                 else
                 {
-                    this.waitingMessages.add(packet);
+                    failedMessages.add(packet);
                 }
             }
         }
+
+        this.waitingMessages.addAll(failedMessages);
     }
 
     /**
@@ -219,7 +222,7 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
             throw new IllegalStateException("Cannot invoke callbacks when AMQPS transport is closed.");
         }
 
-        // Codes_SRS_AMQPSTRANSPORT_15_020: [**The function shall invoke all the callbacks from the callback queue.**]**
+        // Codes_SRS_AMQPSTRANSPORT_15_020: [The function shall invoke all the callbacks from the callback queue.]
         while (!this.callbackList.isEmpty())
         {
             IotHubCallbackPacket packet = this.callbackList.remove();
@@ -250,11 +253,12 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
             throw new IllegalStateException("Cannot handle messages when AMQPS transport is closed.");
         }
 
-        // Codes_SRS_AMQPSTRANSPORT_15_022: [If the callback from the config is null, the function shall return.]
         MessageCallback callback = this.config.getMessageCallback();
-        Object context = this.config.getMessageContext();
+
+        // Codes_SRS_AMQPSTRANSPORT_15_025: [If no callback is defined, the list of received messages is cleared.]
         if (callback == null)
         {
+            this.receivedMessages.clear();
             return;
         }
 
@@ -263,21 +267,18 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
         if (this.receivedMessages.size() > 0)
         {
             AmqpsMessage receivedMessage = this.receivedMessages.remove();
-
-            // Codes_SRS_AMQPSTRANSPORT_15_025: [The function shall return the message if one was pulled from the queue, otherwise it shall return null.]
             Message message = protonMessageToIoTHubMessage(receivedMessage);
-            // Codes_SRS_AMQPSTRANSPORT_15_026: [If a message is found and a message callback is registered, the function shall invoke the callback on the message.]
-            if (message != null)
+
+            // Codes_SRS_AMQPSTRANSPORT_15_026: [The function shall invoke the callback on the message.]
+            IotHubMessageResult result = callback.execute(message, this.config.getMessageContext());
+
+            // Codes_SRS_AMQPSTRANSPORT_15_027: [The function shall return the message result (one of COMPLETE, ABANDON, or REJECT) to the IoT Hub.]
+            Boolean ackResult = this.connection.sendMessageResult(receivedMessage, result);
+
+            // Codes_SRS_AMQPSTRANSPORT_15_028: [If the result could not be sent to IoTHub, the message shall be put back in the received messages queue to be processed again.]
+            if (!ackResult)
             {
-                IotHubMessageResult result = callback.execute(message, context);
-
-                // Codes_SRS_AMQPSTRANSPORT_15_027: [The function shall return the message result (one of COMPLETE, ABANDON, or REJECT) to the IoT Hub.]
-                Boolean ackResult = this.connection.sendMessageResult(receivedMessage, result);
-
-                if (!ackResult)
-                {
-                    receivedMessages.add(receivedMessage);
-                }
+                receivedMessages.add(receivedMessage);
             }
         }
     }
@@ -292,28 +293,20 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
     public void messageSent(Integer messageHash, Boolean deliveryState)
     {
         // Codes_SRS_AMQPSTRANSPORT_15_029: [If the hash cannot be found in the list of keys for the messages in progress, the method returns.]
-        if (!inProgressMessages.containsKey(messageHash))
+        if (inProgressMessages.containsKey(messageHash))
         {
-            return;
-        }
-
-        IotHubOutboundPacket packet = inProgressMessages.get(messageHash);
-
-        if (deliveryState)
-        {
-            // Codes_SRS_AMQPSTRANSPORT_15_030: [If the message was successfully delivered, it is removed from the list of
-            // messages in progress and its callback is added to the list of callbacks to be executed.**]**
-            IotHubCallbackPacket callbackPacket = new IotHubCallbackPacket(IotHubStatusCode.OK_EMPTY, packet.getCallback(), packet.getContext());
-            if (callbackPacket != null)
+            IotHubOutboundPacket packet = inProgressMessages.remove(messageHash);
+            if (deliveryState)
             {
+                // Codes_SRS_AMQPSTRANSPORT_15_030: [If the message was successfully delivered,
+                // its callback is added to the list of callbacks to be executed.]
+                IotHubCallbackPacket callbackPacket = new IotHubCallbackPacket(IotHubStatusCode.OK_EMPTY, packet.getCallback(), packet.getContext());
                 this.callbackList.add(callbackPacket);
+            } else
+            {
+                // Codes_SRS_AMQPSTRANSPORT_15_031: [If the message was not delivered successfully, it is buffered to be sent again.]
+                waitingMessages.add(packet);
             }
-            inProgressMessages.remove(messageHash);
-        }
-        else
-        {
-            // Codes_SRS_AMQPSTRANSPORT_15_031: [If the message was not delivered successfully, it is buffered to be sent again.]
-            waitingMessages.add(packet);
         }
     }
 
@@ -351,7 +344,8 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
      */
     public boolean isEmpty()
     {
-        // Codes_SRS_AMQPSTRANSPORT_15_035: [The function shall return true if the waiting list, in progress list and callback list are all empty, and false otherwise.]
+        // Codes_SRS_AMQPSTRANSPORT_15_035: [The function shall return true if the waiting list,
+        // in progress list and callback list are all empty, and false otherwise.]
         if (this.waitingMessages.isEmpty() && this.inProgressMessages.size() == 0 && this.callbackList.isEmpty())
         {
             return true;
@@ -369,62 +363,60 @@ public final class AmqpsTransport implements IotHubTransport, ServerListener
      */
     private Message protonMessageToIoTHubMessage(MessageImpl protonMsg)
     {
-        Message msg = null;
-        if(protonMsg != null)
+        Data d = (Data) protonMsg.getBody();
+        Binary b = d.getValue();
+        byte[] msgBody = new byte[b.getLength()];
+        ByteBuffer buffer = b.asByteBuffer();
+        buffer.get(msgBody);
+
+        Message msg = new Message(msgBody);
+
+        Properties properties = protonMsg.getProperties();
+        //Call all of the getters for the Proton message Properties and set those properties
+        //in the IoT Hub message properties if they exist.
+        for (Method m : properties.getClass().getMethods())
         {
-            Data d = (Data) protonMsg.getBody();
-            Binary b = d.getValue();
-            byte[] msgBody = new byte[b.getLength()];
-            ByteBuffer buffer = b.asByteBuffer();
-            buffer.get(msgBody);
-            msg = new Message(msgBody);
-
-            Properties properties = protonMsg.getProperties();
-            //Call all of the getters for the Proton message Properties and set those properties
-            //in the IoT Hub message properties if they exist.
-            for (Method m : properties.getClass().getMethods())
+            if (m.getName().startsWith("get"))
             {
-                if (m.getName().startsWith("get"))
+                try
                 {
-                    try
+                    String propertyName = Character.toLowerCase(m.getName().charAt(3)) + m.getName().substring(4);
+                    Object value = m.invoke(properties);
+                    if (value != null && !propertyName.equals("class"))
                     {
-                        String propertyName = Character.toLowerCase(m.getName().charAt(3)) + m.getName().substring(4);
-                        Object value = m.invoke(properties);
-                        if (value != null && !propertyName.equals("class"))
-                        {
-                            String val = value.toString();
+                        String val = value.toString();
 
-                            if (MessageProperty.isValidAppProperty(propertyName, val))
-                            {
-                                msg.setProperty(propertyName, val);
-                            }
+                        if (MessageProperty.isValidAppProperty(propertyName, val))
+                        {
+                            msg.setProperty(propertyName, val);
                         }
                     }
-                    catch (IllegalAccessException e)
-                    {
-                        System.err.println("Attempted to access private or protected member of class during message conversion.");
-                    }
-                    catch (InvocationTargetException e)
-                    {
-                        System.err.println("Exception thrown while attempting to get member variable. See: " + e.getMessage());
-                    }
                 }
-            }
-
-            // Setting the user properties
-            if (protonMsg.getApplicationProperties() != null)
-            {
-                Map<String, String> applicationProperties = protonMsg.getApplicationProperties().getValue();
-                for (Map.Entry<String, String> entry : applicationProperties.entrySet())
+                catch (IllegalAccessException e)
                 {
-                    String propertyKey = entry.getKey();
-                    if (!MessageProperty.RESERVED_PROPERTY_NAMES.contains(propertyKey))
-                    {
-                        msg.setProperty(entry.getKey(), entry.getValue());
-                    }
+                    System.err.println("Attempted to access private or protected member of class during message conversion.");
+                }
+                catch (InvocationTargetException e)
+                {
+                    System.err.println("Exception thrown while attempting to get member variable. See: " + e.getMessage());
                 }
             }
         }
+
+        // Setting the user properties
+        if (protonMsg.getApplicationProperties() != null)
+        {
+            Map<String, String> applicationProperties = protonMsg.getApplicationProperties().getValue();
+            for (Map.Entry<String, String> entry : applicationProperties.entrySet())
+            {
+                String propertyKey = entry.getKey();
+                if (!MessageProperty.RESERVED_PROPERTY_NAMES.contains(propertyKey))
+                {
+                    msg.setProperty(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
         return msg;
     }
 

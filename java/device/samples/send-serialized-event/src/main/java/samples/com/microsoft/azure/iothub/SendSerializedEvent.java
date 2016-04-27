@@ -77,10 +77,9 @@ public class SendSerializedEvent {
         }
     }
 
-    protected static class EventCallback
-            implements IotHubEventCallback
+    protected static class EventCallback implements IotHubEventCallback
     {
-        public Integer execute(IotHubStatusCode status, Object context)
+        public void execute(IotHubStatusCode status, Object context)
         {
             System.out.println("IoT Hub responded to message with status " + status.name());
 

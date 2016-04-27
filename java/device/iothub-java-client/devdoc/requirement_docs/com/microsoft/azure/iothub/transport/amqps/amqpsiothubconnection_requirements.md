@@ -72,6 +72,8 @@ public void open() throws IOException
 public synchronized void close()
 ```
 
+**SRS_AMQPSIOTHUBCONNECTION_15_048 [**If the AMQPS connection is already closed, the function shall do nothing.**]**
+
 **SRS_AMQPSIOTHUBCONNECTION_15_012: [**The function shall set the status of the AMQPS connection to CLOSED.**]**
 
 **SRS_AMQPSIOTHUBCONNECTION_15_013: [**The function shall close the AMQPS sender and receiver links, the AMQP session and the AMQP connection.**]**

@@ -16,7 +16,7 @@ public class SendEvent
     protected static class EventCallback
             implements IotHubEventCallback
     {
-        public Integer execute(IotHubStatusCode status, Object context)
+        public void execute(IotHubStatusCode status, Object context)
         {
             Integer i = (Integer) context;
             System.out.println("IoT Hub responded to message " + i.toString()
@@ -116,29 +116,28 @@ public class SendEvent
         System.out.println("Sending the "
                 + "following event messages:");
 
-        new Thread(() -> {
-            for (int i = 0; i < numRequests; ++i)
-            {
-                String msgStr = "Event Message " + Integer.toString(i);
-                try
-                {
-                    Message msg = new Message(msgStr);
-                    msg.setProperty("messageCount", Integer.toString(i));
-                    System.out.println(msgStr);
 
-                    EventCallback callback = new EventCallback();
-                    client.sendEventAsync(msg, callback, i);
-                }
-                catch (Exception e)
-                {
-                }
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        for (int i = 0; i < numRequests; ++i)
+        {
+            String msgStr = "Event Message " + Integer.toString(i);
+            try
+            {
+                Message msg = new Message(msgStr);
+                msg.setProperty("messageCount", Integer.toString(i));
+                System.out.println(msgStr);
+
+                EventCallback callback = new EventCallback();
+                client.sendEventAsync(msg, callback, i);
             }
-        }).start();
+            catch (Exception e)
+            {
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
