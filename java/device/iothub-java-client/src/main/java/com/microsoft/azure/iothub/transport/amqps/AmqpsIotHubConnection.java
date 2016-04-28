@@ -57,7 +57,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
 
     private int linkCredit = -1;
     /** The {@link Delivery} tag. */
-    private int nextTag = 0;
+    private long nextTag = 0;
     private static final String versionIdentifierKey = "com.microsoft:client-version";
     private static final String webSocketPath = "/$iothub/websocket";
     private static final String webSocketSubProtocol = "AMQPWSB10";
@@ -247,7 +247,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
                 }
             }
             // Codes_SRS_AMQPSIOTHUBCONNECTION_15_017: [The function shall set the delivery tag for the sender.]
-            byte[] tag = String.valueOf(nextTag++).getBytes();
+            byte[] tag = String.valueOf(this. nextTag++).getBytes();
             Delivery dlv = sender.delivery(tag);
 
             // Codes_SRS_AMQPSIOTHUBCONNECTION_15_018: [The function shall attempt to send the message using the sender link.]
@@ -260,6 +260,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
             deliveryHash = dlv.hashCode();
         }
 
+        // Codes_SRS_AMQPSIOTHUBCONNECTION_15_021: [The function shall return the delivery hash.]
         return deliveryHash;
     }
 
@@ -397,11 +398,13 @@ public final class AmqpsIotHubConnection extends BaseHandler
                 receiveLink.advance();
 
                 // Codes_SRS_AMQPSIOTHUBCONNECTION_15_036: [The event handler shall create an AmqpsMessage object from the decoded buffer.]
+                AmqpsMessage msg = new AmqpsMessage();
+
                 // Codes_SRS_AMQPSIOTHUBCONNECTION_15_037: [The event handler shall set the AmqpsMessage Deliver (Proton) object.]
-                Message msg = new AmqpsMessage();
-                ((AmqpsMessage) msg).setDelivery(delivery);
+                msg.setDelivery(delivery);
                 msg.decode(buffer, 0, read);
 
+                // Codes_SRS_AMQPSIOTHUBCONNECTION_15_049: [All the listeners shall be notified that a message was received from the server.]
                 this.messageReceivedFromServer(msg);
             }
         }
@@ -432,7 +435,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
     @Override
     public void onLinkFlow(Event event)
     {
-        // Codes_SRS_AMQPSIOTHUBCONNECTION_15_039: [The event handler shall save the remaining link credit.]
+        // Codes_SRS_AMQPSIOTHUBCONNECTION_15_040: [The event handler shall save the remaining link credit.]
         this.linkCredit = event.getLink().getCredit();
     }
 
@@ -462,7 +465,7 @@ public final class AmqpsIotHubConnection extends BaseHandler
     public void onLinkRemoteClose(Event event)
     {
         // Codes_SRS_AMQPSIOTHUBCONNECTION_15_042 [The event handler shall attempt to reconnect to the IoTHub.]
-        if (event.getLink().getName().equals("sender"))
+        if (event.getLink().getName().equals(sendTag))
         {
             reconnect();
         }
@@ -591,11 +594,11 @@ public final class AmqpsIotHubConnection extends BaseHandler
      * Notifies all the listeners that a message was received from the server.
      * @param msg The message received from server.
      */
-    private void messageReceivedFromServer(Message msg)
+    private void messageReceivedFromServer(AmqpsMessage msg)
     {
         for(ServerListener listener : listeners)
         {
-            listener.messageReceived((AmqpsMessage) msg);
+            listener.messageReceived(msg);
         }
     }
 

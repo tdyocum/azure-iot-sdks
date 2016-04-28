@@ -99,7 +99,7 @@ public Integer sendMessage(Message message)
 
 **SRS_AMQPSIOTHUBCONNECTION_15_020: [**The function shall set the delivery hash to the value returned by the sender link.**]**
 
-**SRS_AMQPSIOTHUBCONNECTION_15_021: [**The function shall retyrn the delivery hash.**]**
+**SRS_AMQPSIOTHUBCONNECTION_15_021: [**The function shall return the delivery hash.**]**
 
 
 ### sendMessageResult
@@ -171,6 +171,8 @@ public void onDelivery(Event event)
 **SRS_AMQPSIOTHUBCONNECTION_15_038: [**If this link is the Sender link and the event type is DELIVERY, the event handler shall get the Delivery (Proton) object from the event.**]**
 
 **SRS_AMQPSIOTHUBCONNECTION_15_039: [**The event handler shall note the remote delivery state and use it and the Delivery (Proton) hash code to inform the AmqpsIotHubConnection of the message receipt.**]**
+
+**SRS_AMQPSIOTHUBCONNECTION_15_049: [**All the listeners shall be notified that a message was received from the server.**]**
 
 
 ## onLinkFlow
