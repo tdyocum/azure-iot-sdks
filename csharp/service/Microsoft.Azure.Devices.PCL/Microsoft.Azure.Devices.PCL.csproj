@@ -1,0 +1,497 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EA0797E1-5F62-44AA-82B1-33D405690ECE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Azure.Devices.PCL</RootNamespace>
+    <AssemblyName>Microsoft.Azure.Devices.PCL</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Microsoft.Azure.Devices\AmqpClientHelper.cs">
+      <Link>AmqpClientHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\AmqpFeedbackReceiver.cs">
+      <Link>AmqpFeedbackReceiver.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\AmqpServiceClient.cs">
+      <Link>AmqpServiceClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ApiResources.Designer.cs">
+      <Link>ApiResources.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ApiResources1.Designer.cs">
+      <Link>ApiResources1.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ApiResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\AuthenticationMechanism.cs">
+      <Link>AuthenticationMechanism.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\AuthenticationMethodFactory.cs">
+      <Link>AuthenticationMethodFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ClientApiVersionHelper.cs">
+      <Link>ClientApiVersionHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\ActionItem.cs">
+      <Link>Common\ActionItem.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\AmqpTrace.cs">
+      <Link>Common\AmqpTrace.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Amqp\ClientWebSocketTransport.cs">
+      <Link>Common\Amqp\ClientWebSocketTransport.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Amqp\WebSocketConstants.cs">
+      <Link>Common\Amqp\WebSocketConstants.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\AsyncResult.cs">
+      <Link>Common\AsyncResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\BufferedInputStream.cs">
+      <Link>Common\BufferedInputStream.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Client\IotHubAmqpProperty.cs">
+      <Link>Common\Client\IotHubAmqpProperty.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\CommonConstants.cs">
+      <Link>Common\CommonConstants.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\CommonResources.cs">
+      <Link>Common\CommonResources.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\CompletedAsyncResult.cs">
+      <Link>Common\CompletedAsyncResult.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Data\AccessRights.cs">
+      <Link>Common\Data\AccessRights.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Data\AmqpErrorMapper.cs">
+      <Link>Common\Data\AmqpErrorMapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Data\SharedAccessSignatureAuthorizationRule.cs">
+      <Link>Common\Data\SharedAccessSignatureAuthorizationRule.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\EventHubPartitionKeyResolver.cs">
+      <Link>Common\EventHubPartitionKeyResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\ExceptionDispatcher.cs">
+      <Link>Common\ExceptionDispatcher.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\AssertionFailedException.cs">
+      <Link>Common\Exceptions\AssertionFailedException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\CallbackException.cs">
+      <Link>Common\Exceptions\CallbackException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\DeviceAlreadyExistsException.cs">
+      <Link>Common\Exceptions\DeviceAlreadyExistsException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\DeviceInvalidResultCountException.cs">
+      <Link>Common\Exceptions\DeviceInvalidResultCountException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\DeviceMaximumQueueDepthExceededException.cs">
+      <Link>Common\Exceptions\DeviceMaximumQueueDepthExceededException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\DeviceMessageLockLostException.cs">
+      <Link>Common\Exceptions\DeviceMessageLockLostException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\DeviceNotFoundException.cs">
+      <Link>Common\Exceptions\DeviceNotFoundException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\ErrorCode.cs">
+      <Link>Common\Exceptions\ErrorCode.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\FatalException.cs">
+      <Link>Common\Exceptions\FatalException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\InvalidProtocolVersionException.cs">
+      <Link>Common\Exceptions\InvalidProtocolVersionException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubAmqpErrorCode.cs">
+      <Link>Common\Exceptions\IotHubAmqpErrorCode.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubCommunicationException.cs">
+      <Link>Common\Exceptions\IotHubCommunicationException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubException.cs">
+      <Link>Common\Exceptions\IotHubException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubNotFoundException.cs">
+      <Link>Common\Exceptions\IotHubNotFoundException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubSerializationException.cs">
+      <Link>Common\Exceptions\IotHubSerializationException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubSerializationVersionException.cs">
+      <Link>Common\Exceptions\IotHubSerializationVersionException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubSuspendedException.cs">
+      <Link>Common\Exceptions\IotHubSuspendedException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\IotHubThrottledException.cs">
+      <Link>Common\Exceptions\IotHubThrottledException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\JobCancelledException.cs">
+      <Link>Common\Exceptions\JobCancelledException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\JobNotFoundException.cs">
+      <Link>Common\Exceptions\JobNotFoundException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\JobQuotaExceededException.cs">
+      <Link>Common\Exceptions\JobQuotaExceededException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\MessageTooLargeException.cs">
+      <Link>Common\Exceptions\MessageTooLargeException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\PreconditionFailedException.cs">
+      <Link>Common\Exceptions\PreconditionFailedException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\QuotaExceededException.cs">
+      <Link>Common\Exceptions\QuotaExceededException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\ServerBusyException.cs">
+      <Link>Common\Exceptions\ServerBusyException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\ServerErrorException.cs">
+      <Link>Common\Exceptions\ServerErrorException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\ThrottlingException.cs">
+      <Link>Common\Exceptions\ThrottlingException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\TooManyDevicesException.cs">
+      <Link>Common\Exceptions\TooManyDevicesException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Exceptions\UnauthorizedException.cs">
+      <Link>Common\Exceptions\UnauthorizedException.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\ExceptionTrace.cs">
+      <Link>Common\ExceptionTrace.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Extensions\CommonExtensions.cs">
+      <Link>Common\Extensions\CommonExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Extensions\DictionaryExtensions.cs">
+      <Link>Common\Extensions\DictionaryExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Extensions\EnumerableExtensions.cs">
+      <Link>Common\Extensions\EnumerableExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Extensions\ExceptionExtensions.cs">
+      <Link>Common\Extensions\ExceptionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Extensions\MemberInfoExtensions.cs">
+      <Link>Common\Extensions\MemberInfoExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Extensions\OtherExtensions.cs">
+      <Link>Common\Extensions\OtherExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Extensions\StringFormattingExtensions.cs">
+      <Link>Common\Extensions\StringFormattingExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Fx.cs">
+      <Link>Common\Fx.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\FxCop.cs">
+      <Link>Common\FxCop.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\FxTrace.cs">
+      <Link>Common\FxTrace.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\HashCode.cs">
+      <Link>Common\HashCode.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\IAmqpTrace.cs">
+      <Link>Common\IAmqpTrace.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\IETagHolder.cs">
+      <Link>Common\IETagHolder.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\InternalBufferManager.cs">
+      <Link>Common\InternalBufferManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Interop\SafeEventLogWriteHandle.cs">
+      <Link>Common\Interop\SafeEventLogWriteHandle.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Interop\UnsafeNativeMethods.cs">
+      <Link>Common\Interop\UnsafeNativeMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\IOThreadScheduler.cs">
+      <Link>Common\IOThreadScheduler.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\IOThreadTimer.cs">
+      <Link>Common\IOThreadTimer.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\PartialTrustHelpers.cs">
+      <Link>Common\PartialTrustHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\PerfectHash.cs">
+      <Link>Common\PerfectHash.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\ReadOnlyDictionary45.cs">
+      <Link>Common\ReadOnlyDictionary45.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Resources.Designer.cs">
+      <Link>Common\Resources.Designer.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Resources1.Designer.cs">
+      <Link>Common\Resources1.Designer.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Security\CryptoKeyGenerator.cs">
+      <Link>Common\Security\CryptoKeyGenerator.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Security\ISharedAccessSignatureCredential.cs">
+      <Link>Common\Security\ISharedAccessSignatureCredential.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Security\SecurityConstants.cs">
+      <Link>Common\Security\SecurityConstants.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Security\SecurityHelper.cs">
+      <Link>Common\Security\SecurityHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Security\SharedAccessSignature.cs">
+      <Link>Common\Security\SharedAccessSignature.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Security\SharedAccessSignatureBuilder.cs">
+      <Link>Common\Security\SharedAccessSignatureBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Security\SharedAccessSignatureConstants.cs">
+      <Link>Common\Security\SharedAccessSignatureConstants.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\SerializationUtilities.cs">
+      <Link>Common\SerializationUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\SignalGate.cs">
+      <Link>Common\SignalGate.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\SingletonDictionary.cs">
+      <Link>Common\SingletonDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\StringValidationHelper.cs">
+      <Link>Common\StringValidationHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\SynchronizedPool.cs">
+      <Link>Common\SynchronizedPool.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\TaskHelpers.cs">
+      <Link>Common\TaskHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Ticks.cs">
+      <Link>Common\Ticks.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\TimeoutHelper.cs">
+      <Link>Common\TimeoutHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Timestamp.cs">
+      <Link>Common\Timestamp.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\TraceOperation.cs">
+      <Link>Common\TraceOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Tracing\EventTraceActivity.cs">
+      <Link>Common\Tracing\EventTraceActivity.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\TrackingHelper.cs">
+      <Link>Common\TrackingHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\Utils.cs">
+      <Link>Common\Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\WaitCallbackActionItem.cs">
+      <Link>Common\WaitCallbackActionItem.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\WebApi\CustomHeaderConstants.cs">
+      <Link>Common\WebApi\CustomHeaderConstants.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Common\WebApi\ResourceRequest.cs">
+      <Link>Common\WebApi\ResourceRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\DeliveryAcknowledgement.cs">
+      <Link>DeliveryAcknowledgement.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\DeliveryFailureReason.cs">
+      <Link>DeliveryFailureReason.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Device.cs">
+      <Link>Device.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\DeviceConnectionState.cs">
+      <Link>DeviceConnectionState.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\DeviceStatus.cs">
+      <Link>DeviceStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\EndpointKind.cs">
+      <Link>EndpointKind.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ETagHolder.cs">
+      <Link>ETagHolder.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ExceptionHandlingHelper.cs">
+      <Link>ExceptionHandlingHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ExportDevicesRequest.cs">
+      <Link>ExportDevicesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ExportImportDevice.cs">
+      <Link>ExportImportDevice.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ExportImportRequest.cs">
+      <Link>ExportImportRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\FeedbackBatch.cs">
+      <Link>FeedbackBatch.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\FeedbackReceiver.cs">
+      <Link>FeedbackReceiver.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\FeedbackRecord.cs">
+      <Link>FeedbackRecord.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\FeedbackStatusCode.cs">
+      <Link>FeedbackStatusCode.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\HttpClientHelper.cs">
+      <Link>HttpClientHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\HttpRegistryManager.cs">
+      <Link>HttpRegistryManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\IAuthenticationMethod.cs">
+      <Link>IAuthenticationMethod.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\IAuthorizationHeaderProvider.cs">
+      <Link>IAuthorizationHeaderProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\IHttpClientHelper.cs">
+      <Link>IHttpClientHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ImportDevicesRequest.cs">
+      <Link>ImportDevicesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ImportMode.cs">
+      <Link>ImportMode.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\IotHubApiResources.cs">
+      <Link>IotHubApiResources.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\IotHubConnection.cs">
+      <Link>IotHubConnection.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\IotHubConnectionString.cs">
+      <Link>IotHubConnectionString.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\IotHubConnectionStringBuilder.cs">
+      <Link>IotHubConnectionStringBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\JobProperties.cs">
+      <Link>JobProperties.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\JobStatus.cs">
+      <Link>JobStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\JobType.cs">
+      <Link>JobType.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\MappingType.cs">
+      <Link>MappingType.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Message.cs">
+      <Link>Message.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\MessageConverter.cs">
+      <Link>MessageConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\MessageSystemPropertyNames.cs">
+      <Link>MessageSystemPropertyNames.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\PutOperationType.cs">
+      <Link>PutOperationType.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\Receiver.cs">
+      <Link>Receiver.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\RegistryManager.cs">
+      <Link>RegistryManager.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\RegistryStatistics.cs">
+      <Link>RegistryStatistics.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ServiceAuthenticationWithSharedAccessPolicyKey.cs">
+      <Link>ServiceAuthenticationWithSharedAccessPolicyKey.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ServiceAuthenticationWithSharedAccessPolicyToken.cs">
+      <Link>ServiceAuthenticationWithSharedAccessPolicyToken.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ServiceClient.cs">
+      <Link>ServiceClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\ServiceStatistics.cs">
+      <Link>ServiceStatistics.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.Azure.Devices\SymmetricKey.cs">
+      <Link>SymmetricKey.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Microsoft.Azure.Devices\ApiResources.resx">
+      <Link>ApiResources.resx</Link>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ApiResources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Microsoft.Azure.Devices\Common\Resources.resx">
+      <Link>Common\Resources.resx</Link>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
